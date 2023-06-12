@@ -1,53 +1,62 @@
 import random
 
-# список слів для вибору
-word_list = ["apple", "banana", "orange", "pear", "watermelon"]
+# список можливих слів
+words = ["apple", "banana", "cherry", "orange", "lemon", "pear", "kiwi", "mango", "pineapple", "watermelon"]
 
-# вибираємо випадкове слово зі списку
-chosen_word = random.choice(word_list)
+# вибір випадкового слова зі списку та ініціалізація змінних
+chosen_word = random.choice(words)
+word_length = len(chosen_word)
+attempts = 10
+used_letters = []
+hidden_word = ["*" for _ in range(word_length)]
 
-# робимо список з зірочками для кожної літери слова
-hidden_word = list("*" * len(chosen_word))
+# друк слова зірочками на початку гри
+output = " ".join(hidden_word)
+print(output)
 
-# кількість спроб
-num_guesses = int(input("Введіть кількість спроб: "))
+# головний цикл гри
+while True:
+    print("Залишилось спроб:", attempts)
+    user_input = input("Введіть літеру або слово: ").lower()
 
-# цикл для угадування слова
-while num_guesses > 0:
-    # виводимо на екран заховане слово
-    print(" ".join(hidden_word))
-
-    # запитуємо користувача наступну літеру або слово
-    guess = input("Введіть літеру або слово: ").lower()
-
-    # якщо користувач повторив слово, виводимо відповідне повідомлення
-    if guess == chosen_word:
-        print("Вітаю, ви вгадали слово!")
+    # перевірка чи користувач ввів вже відгадане слово
+    if user_input == chosen_word:
+        print("Вітаю, ви вгадали слово")
         break
-
-    # якщо користувач ввів літеру
-    elif len(guess) == 1:
-        # перевіряємо чи ця літера є у слові
-        if guess in chosen_word:
-            # замінюємо всі зірочки на цю літеру в списку зі словом
-            for i in range(len(chosen_word)):
-                if chosen_word[i] == guess:
-                    hidden_word[i] = guess
-            print("".join(hidden_word))
-        else:
-            print("Такої літери немає.")
-            num_guesses -= 1
-
-    # якщо користувач ввів більше однієї літери
+    elif len(user_input) > 1:
+        print("Це не вірне слово")
+        attempts -= 1
     else:
-        print("Введіть тільки одну літеру або всі слово.")
-        num_guesses -= 1
+        letter = user_input
+        # перевірка чи введена літера вже була використана
+        if letter in used_letters:
+            print("Ви вже вводили цю літеру, спробуйте ще")
+            continue
 
-    # перевіряємо, чи вгадано всі букви
-    if "".join(hidden_word) == chosen_word:
-        print("Вітаю, ви вгадали слово!")
-        break
+        used_letters.append(letter)
 
-    # якщо спроб більше не залишилося, кінець гри
-    if num_guesses == 0:
-        print("На жаль, ви програли. Слово було", chosen_word)
+        # перевірка чи введена літера є в слові
+        if letter in chosen_word:
+            print("Так, ця літера є в слові")
+            for index, char in enumerate(chosen_word):
+                if char == letter:
+                    hidden_word[index] = letter
+
+            # перевірка чи всі літери відгадані
+            if "*" not in hidden_word:
+                print("Вітаю, ви вгадали слово")
+                break
+        else:
+            print("На жаль, цієї літери немає в слові")
+            attempts -= 1
+
+        # перевизначення значення для друку
+        output = "".join(hidden_word)
+
+        # перевірка чи залишились спроби
+        if attempts == 0:
+            print("Ви програли. Загадане слово було:", chosen_word)
+            break
+
+    # друк прихованого слова
+    print(output)
